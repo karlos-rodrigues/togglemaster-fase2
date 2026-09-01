@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: auth-service
+  namespace: auth
+  labels: { app: auth-service, app.kubernetes.io/part-of: togglemaster }
+spec:
+  replicas: 2
+  selector: { matchLabels: { app: auth-service } }
+  template:
+    metadata:
+      labels: { app: auth-service }
+    spec:
+      containers:
+        - name: auth-service
+          image: 217579643777.dkr.ecr.us-east-1.amazonaws.com/auth-service:v1
+          ports: [ { containerPort: 8001, name: http } ]
+          env:
+            - name: PORT
+              valueFrom: { configMapKeyRef: { name: auth-config, key: PORT } }
+            - name: DATABASE_URL
+              valueFrom: { secretKeyRef: { name: auth-secrets, key: DATABASE_URL } }
+            - name: MASTER_KEY
+              valueFrom: { secretKeyRef: { name: auth-secrets, key: MASTER_KEY } }
+          resources:
+            requests: { cpu: 50m,  memory: 32Mi }
+            limits:   { cpu: 300m, memory: 128Mi }
+          # Binário Go: sobe praticamente instantâneo.
+          readinessProbe:
+            httpGet: { path: /health, port: http }
+            initialDelaySeconds: 3
+            periodSeconds: 5
+          livenessProbe:
+            httpGet: { path: /health, port: http }
+            initialDelaySeconds: 10
+            periodSeconds: 15

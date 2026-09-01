@@ -1,0 +1,209 @@
+# ToggleMaster — ambiente local completo (Tech Challenge Fase 2, etapa 1).
+#
+# 9 contêineres, exatamente como o enunciado pede: 5 aplicações + 4 bancos.
+#
+#   aplicações                          bancos
+#   ├── auth-service        :8001       ├── postgres-auth   (auth_db)
+#   ├── flag-service        :8002       ├── postgres-flags  (flag_db + targeting_db)
+#   ├── targeting-service   :8003       ├── redis
+#   ├── evaluation-service  :8004       └── dynamodb-local
+#   └── analytics-service   :8005
+#
+# O enunciado pede 2 instâncias PostgreSQL locais para 3 serviços, então postgres-flags
+# hospeda dois bancos lógicos. Na AWS viram 3 instâncias RDS independentes (etapa 2).
+#
+# Subir:      docker compose up -d --build
+# Bootstrap:  docker compose --profile bootstrap run --rm dynamodb-init
+# Ver estado: docker compose ps
+
+name: togglemaster
+
+x-aws-common: &aws-common
+  AWS_REGION: ${AWS_REGION:-us-east-1}
+  AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID:-local}
+  AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY:-local}
+  AWS_SESSION_TOKEN: ${AWS_SESSION_TOKEN:-}
+
+services:
+
+  # ────────────────────────────── bancos ──────────────────────────────
+
+  postgres-auth:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: ${PG_USER:-togglemaster}
+      POSTGRES_PASSWORD: ${PG_PASSWORD:?defina PG_PASSWORD no .env}
+      POSTGRES_DB: auth_db
+    volumes:
+      - pgdata-auth:/var/lib/postgresql/data
+      # schema vem do próprio repositório da FIAP, sem cópia intermediária
+      - ./services/auth-service/db/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${PG_USER:-togglemaster} -d auth_db"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 10s
+
+  postgres-flags:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: ${PG_USER:-togglemaster}
+      POSTGRES_PASSWORD: ${PG_PASSWORD:?defina PG_PASSWORD no .env}
+      POSTGRES_DB: flag_db
+    volumes:
+      - pgdata-flags:/var/lib/postgresql/data
+      - ./local/initdb-flags:/docker-entrypoint-initdb.d:ro
+      - ./services/flag-service/db/init.sql:/schemas/flag-init.sql:ro
+      - ./services/targeting-service/db/init.sql:/schemas/targeting-init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${PG_USER:-togglemaster} -d flag_db"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 10s
+
+  redis:
+    image: redis:7-alpine
+    command: ["redis-server", "--save", "", "--appendonly", "no"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  dynamodb-local:
+    image: amazon/dynamodb-local:2.5.2
+    # -sharedDb: um único arquivo de banco, independente da access key usada.
+    # Sem isso, cada credencial enxerga um conjunto de tabelas diferente.
+    command: ["-jar", "DynamoDBLocal.jar", "-sharedDb", "-dbPath", "/data"]
+    working_dir: /home/dynamodblocal
+    user: root
+    volumes:
+      - dynamodb-data:/data
+
+  # ─────────────────────────── aplicações ────────────────────────────
+
+  auth-service:
+    build:
+      context: ./services/auth-service
+    image: togglemaster/auth-service:local
+    environment:
+      PORT: "8001"
+      DATABASE_URL: postgres://${PG_USER:-togglemaster}:${PG_PASSWORD}@postgres-auth:5432/auth_db?sslmode=disable
+      MASTER_KEY: ${MASTER_KEY:?defina MASTER_KEY no .env}
+    ports:
+      - "8001:8001"
+    depends_on:
+      postgres-auth:
+        condition: service_healthy
+    restart: unless-stopped
+
+  flag-service:
+    build:
+      context: ./services/flag-service
+    image: togglemaster/flag-service:local
+    environment:
+      PORT: "8002"
+      DATABASE_URL: postgres://${PG_USER:-togglemaster}:${PG_PASSWORD}@postgres-flags:5432/flag_db
+      AUTH_SERVICE_URL: http://auth-service:8001
+    ports:
+      - "8002:8002"
+    depends_on:
+      postgres-flags:
+        condition: service_healthy
+      auth-service:
+        condition: service_started
+    restart: unless-stopped
+
+  targeting-service:
+    build:
+      context: ./services/targeting-service
+    image: togglemaster/targeting-service:local
+    environment:
+      PORT: "8003"
+      DATABASE_URL: postgres://${PG_USER:-togglemaster}:${PG_PASSWORD}@postgres-flags:5432/targeting_db
+      AUTH_SERVICE_URL: http://auth-service:8001
+    ports:
+      - "8003:8003"
+    depends_on:
+      postgres-flags:
+        condition: service_healthy
+      auth-service:
+        condition: service_started
+    restart: unless-stopped
+
+  evaluation-service:
+    build:
+      context: ./services/evaluation-service
+    image: togglemaster/evaluation-service:local
+    environment:
+      <<: *aws-common
+      PORT: "8004"
+      REDIS_URL: redis://redis:6379
+      FLAG_SERVICE_URL: http://flag-service:8002
+      TARGETING_SERVICE_URL: http://targeting-service:8003
+      # Criada em runtime pelo auth-service — ver README, passo 3.
+      SERVICE_API_KEY: ${SERVICE_API_KEY:-}
+      # Vazia = o serviço loga [SQS_DISABLED] e segue funcionando (tratado no sqs.go).
+      AWS_SQS_URL: ${AWS_SQS_URL:-}
+    ports:
+      - "8004:8004"
+    depends_on:
+      redis:
+        condition: service_healthy
+      flag-service:
+        condition: service_healthy
+      targeting-service:
+        condition: service_healthy
+    restart: unless-stopped
+
+  analytics-service:
+    build:
+      context: ./services/analytics-service
+    image: togglemaster/analytics-service:local
+    environment:
+      <<: *aws-common
+      PORT: "8005"
+      # O app.py encerra com sys.exit(1) se esta faltar, e o contêiner reinicia em
+      # loop até a fila da etapa 2 existir. Deixada opcional de propósito: com o
+      # guard ':?' nem o 'docker compose build' rodava antes de haver fila na AWS.
+      AWS_SQS_URL: ${AWS_SQS_URL:-}
+      AWS_DYNAMODB_TABLE: ${AWS_DYNAMODB_TABLE:-ToggleMasterAnalytics}
+      # Redireciona o boto3 para o DynamoDB Local sem tocar no app.py.
+      # Na AWS, basta não definir esta variável.
+      AWS_ENDPOINT_URL_DYNAMODB: http://dynamodb-local:8000
+    ports:
+      - "8005:8005"
+    depends_on:
+      dynamodb-local:
+        condition: service_started
+    restart: unless-stopped
+
+  # ──────────────────────── bootstrap (perfil) ────────────────────────
+  # Fora do "up" padrão para não contar como um 10º contêiner: roda, cria a
+  # tabela no DynamoDB Local e sai.
+  #   docker compose --profile bootstrap run --rm dynamodb-init
+  dynamodb-init:
+    profiles: ["bootstrap"]
+    image: amazon/aws-cli:2.17.0
+    environment:
+      <<: *aws-common
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        aws dynamodb create-table \
+          --endpoint-url http://dynamodb-local:8000 \
+          --table-name "${AWS_DYNAMODB_TABLE:-ToggleMasterAnalytics}" \
+          --attribute-definitions AttributeName=event_id,AttributeType=S \
+          --key-schema AttributeName=event_id,KeyType=HASH \
+          --provisioned-throughput ReadCapacityUnits=1,WriteCapacityUnits=1 \
+        && echo "tabela criada" \
+        || echo "tabela já existe, nada a fazer"
+    depends_on:
+      - dynamodb-local
+
+volumes:
+  pgdata-auth:
+  pgdata-flags:
+  dynamodb-data:

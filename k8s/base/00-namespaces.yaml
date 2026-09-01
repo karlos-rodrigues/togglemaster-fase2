@@ -1,0 +1,21 @@
+# Um namespace por microsserviço, como o enunciado exige.
+# Permite ResourceQuota e RBAC independentes por área.
+apiVersion: v1
+kind: Namespace
+metadata: { name: auth,       labels: { app.kubernetes.io/part-of: togglemaster } }
+---
+apiVersion: v1
+kind: Namespace
+metadata: { name: flags,      labels: { app.kubernetes.io/part-of: togglemaster } }
+---
+apiVersion: v1
+kind: Namespace
+metadata: { name: targeting,  labels: { app.kubernetes.io/part-of: togglemaster } }
+---
+apiVersion: v1
+kind: Namespace
+metadata: { name: evaluation, labels: { app.kubernetes.io/part-of: togglemaster } }
+---
+apiVersion: v1
+kind: Namespace
+metadata: { name: analytics,  labels: { app.kubernetes.io/part-of: togglemaster } }

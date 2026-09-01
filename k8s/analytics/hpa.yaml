@@ -1,0 +1,19 @@
+# Opção A (AWS Academy) — e requisito mínimo do enunciado nas duas opções.
+# Métrica INDIRETA: mede o efeito (CPU ao processar mensagens) e não a causa
+# (profundidade da fila). Só reage depois que a carga virou processamento, e
+# nunca escala a zero. Ver keda-scaledobject.yaml para a alternativa.
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata: { name: analytics-service, namespace: analytics }
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: analytics-service
+  minReplicas: 1
+  maxReplicas: 5
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target: { type: Utilization, averageUtilization: 65 }

@@ -1,0 +1,22 @@
+# Opção B (conta pessoal) — ALTERNATIVA ao hpa.yaml, não aplicar os dois juntos.
+# Exige KEDA instalado e IRSA (o KEDA precisa de uma role própria para ler a fila),
+# o que o AWS Academy não permite.
+#
+# Métrica DIRETA: observa a profundidade da fila e escala de 0 a N. É a métrica
+# correta para carga orientada a eventos.
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata: { name: analytics-service, namespace: analytics }
+spec:
+  scaleTargetRef: { name: analytics-service }
+  minReplicaCount: 0
+  maxReplicaCount: 10
+  pollingInterval: 15
+  cooldownPeriod: 120
+  triggers:
+    - type: aws-sqs-queue
+      metadata:
+        queueURL: SUBSTITUIR_PELA_URL_DA_FILA
+        queueLength: "10"        # ~10 mensagens pendentes por réplica
+        awsRegion: us-east-1
+        identityOwner: operator  # usa a role do KEDA via IRSA

@@ -1,0 +1,26 @@
+# Requisito mínimo do enunciado: HPA por utilização média de CPU.
+# Depende do Metrics Server instalado no cluster.
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata: { name: evaluation-service, namespace: evaluation }
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: evaluation-service
+  minReplicas: 2
+  maxReplicas: 6
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target: { type: Utilization, averageUtilization: 70 }
+  behavior:
+    scaleUp:
+      # Sobe rápido: o teste de carga precisa mostrar réplicas nascendo.
+      stabilizationWindowSeconds: 0
+      policies: [ { type: Percent, value: 100, periodSeconds: 30 } ]
+    scaleDown:
+      # Desce devagar, para não oscilar entre picos de carga.
+      stabilizationWindowSeconds: 180
+      policies: [ { type: Pods, value: 1, periodSeconds: 60 } ]

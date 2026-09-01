@@ -1,0 +1,7 @@
+.env
+.env.example.local
+*.log
+aws-ids.env
+services/*/.env
+k8s/**/secret-*.yaml
+services/

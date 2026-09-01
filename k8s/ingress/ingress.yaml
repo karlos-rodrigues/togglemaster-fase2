@@ -1,0 +1,38 @@
+# Ingress único de entrada, roteando por prefixo para o Service de cada
+# microsserviço. Namespace 'evaluation' só por convenção de onde o objeto mora —
+# o Ingress enxerga Services de qualquer namespace pelo nome qualificado.
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: togglemaster
+  namespace: evaluation
+  annotations:
+    # As rotas dos serviços são /health, /flags/<nome>, /rules/<flag> e /evaluate —
+    # SEM o prefixo do Ingress. Sem esta reescrita, todo o tráfego que passar pelo
+    # Load Balancer cai em 404, mesmo com os pods saudáveis e o port-forward OK.
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+spec:
+  ingressClassName: nginx
+  rules:
+    - http:
+        paths:
+          - path: /auth(/|$)(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service: { name: auth-service, port: { number: 8001 } }
+          - path: /flags(/|$)(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service: { name: flag-service, port: { number: 8002 } }
+          - path: /targeting(/|$)(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service: { name: targeting-service, port: { number: 8003 } }
+          - path: /evaluate(/|$)(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service: { name: evaluation-service, port: { number: 8004 } }
+          - path: /events(/|$)(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service: { name: analytics-service, port: { number: 8005 } }

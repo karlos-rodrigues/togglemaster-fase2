@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: evaluation-service
+  namespace: evaluation
+  labels: { app: evaluation-service, app.kubernetes.io/part-of: togglemaster }
+spec:
+  replicas: 2
+  selector: { matchLabels: { app: evaluation-service } }
+  template:
+    metadata:
+      labels: { app: evaluation-service }
+    spec:
+      serviceAccountName: evaluation-sa
+      containers:
+        - name: evaluation-service
+          image: 217579643777.dkr.ecr.us-east-1.amazonaws.com/evaluation-service:v1
+          ports: [ { containerPort: 8004, name: http } ]
+          envFrom:
+            - configMapRef: { name: evaluation-config }
+          env:
+            - name: REDIS_URL
+              valueFrom: { secretKeyRef: { name: evaluation-secrets, key: REDIS_URL } }
+            - name: SERVICE_API_KEY
+              valueFrom: { secretKeyRef: { name: evaluation-secrets, key: SERVICE_API_KEY } }
+            - name: AWS_SQS_URL
+              valueFrom: { secretKeyRef: { name: evaluation-secrets, key: AWS_SQS_URL } }
+          # Requests baixo de propósito: é o alvo do HPA, e o alvo de 70% de CPU
+          # é calculado sobre o REQUEST, não sobre o limit.
+          resources:
+            requests: { cpu: 100m, memory: 48Mi }
+            limits:   { cpu: 500m, memory: 192Mi }
+          readinessProbe:
+            httpGet: { path: /health, port: http }
+            initialDelaySeconds: 3
+            periodSeconds: 5
+          livenessProbe:
+            httpGet: { path: /health, port: http }
+            initialDelaySeconds: 10
+            periodSeconds: 15

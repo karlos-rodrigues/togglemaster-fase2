@@ -1,0 +1,36 @@
+# O Ingress e o Service alvo precisam estar no MESMO namespace (a menos que se use
+# um objeto Service do tipo ExternalName como ponte). Como cada microsserviço vive
+# no seu próprio namespace por exigência do enunciado, e o Ingress mora em
+# 'evaluation', criamos aqui um espelho ExternalName por serviço de outro
+# namespace, resolvendo via DNS interno do cluster.
+apiVersion: v1
+kind: Service
+metadata: { name: auth-service, namespace: evaluation }
+spec:
+  type: ExternalName
+  externalName: auth-service.auth.svc.cluster.local
+  ports: [ { port: 8001 } ]
+---
+apiVersion: v1
+kind: Service
+metadata: { name: flag-service, namespace: evaluation }
+spec:
+  type: ExternalName
+  externalName: flag-service.flags.svc.cluster.local
+  ports: [ { port: 8002 } ]
+---
+apiVersion: v1
+kind: Service
+metadata: { name: targeting-service, namespace: evaluation }
+spec:
+  type: ExternalName
+  externalName: targeting-service.targeting.svc.cluster.local
+  ports: [ { port: 8003 } ]
+---
+apiVersion: v1
+kind: Service
+metadata: { name: analytics-service, namespace: evaluation }
+spec:
+  type: ExternalName
+  externalName: analytics-service.analytics.svc.cluster.local
+  ports: [ { port: 8005 } ]

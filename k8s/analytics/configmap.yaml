@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata: { name: analytics-config, namespace: analytics }
+data:
+  PORT: "8005"
+  AWS_REGION: "us-east-1"
+  # Imposto pelo código: o app.py grava o item com a chave de partição 'event_id'.
+  AWS_DYNAMODB_TABLE: "ToggleMasterAnalytics"

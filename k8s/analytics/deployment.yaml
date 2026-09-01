@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: analytics-service
+  namespace: analytics
+  labels: { app: analytics-service, app.kubernetes.io/part-of: togglemaster }
+spec:
+  replicas: 1
+  selector: { matchLabels: { app: analytics-service } }
+  template:
+    metadata:
+      labels: { app: analytics-service }
+    spec:
+      serviceAccountName: analytics-sa
+      containers:
+        - name: analytics-service
+          # A imagem roda Gunicorn com --workers 1 de propósito: o consumidor SQS
+          # sobe no import do módulo, então N workers seriam N consumidores da mesma
+          # fila DENTRO do mesmo pod, e a contagem de réplicas deixaria de ser
+          # proporcional à vazão. 1 pod = 1 consumidor.
+          image: 217579643777.dkr.ecr.us-east-1.amazonaws.com/analytics-service:v1
+          ports: [ { containerPort: 8005, name: http } ]
+          envFrom:
+            - configMapRef: { name: analytics-config }
+          env:
+            - name: AWS_SQS_URL
+              valueFrom: { secretKeyRef: { name: analytics-secrets, key: AWS_SQS_URL } }
+          resources:
+            requests: { cpu: 100m, memory: 128Mi }
+            limits:   { cpu: 500m, memory: 384Mi }
+          readinessProbe:
+            httpGet: { path: /health, port: http }
+            initialDelaySeconds: 15
+            periodSeconds: 5
+          livenessProbe:
+            httpGet: { path: /health, port: http }
+            initialDelaySeconds: 30
+            periodSeconds: 15

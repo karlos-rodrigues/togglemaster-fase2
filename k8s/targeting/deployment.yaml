@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: targeting-service
+  namespace: targeting
+  labels: { app: targeting-service, app.kubernetes.io/part-of: togglemaster }
+spec:
+  replicas: 2
+  selector: { matchLabels: { app: targeting-service } }
+  template:
+    metadata:
+      labels: { app: targeting-service }
+    spec:
+      containers:
+        - name: targeting-service
+          image: 217579643777.dkr.ecr.us-east-1.amazonaws.com/targeting-service:v1
+          ports: [ { containerPort: 8003, name: http } ]
+          envFrom:
+            - configMapRef: { name: targeting-service-config }
+          env:
+            - name: DATABASE_URL
+              valueFrom: { secretKeyRef: { name: targeting-service-secrets, key: DATABASE_URL } }
+          resources:
+            requests: { cpu: 100m, memory: 128Mi }
+            limits:   { cpu: 500m, memory: 384Mi }
+          # Python sob Gunicorn demora mais para aceitar tráfego que um binário Go.
+          readinessProbe:
+            httpGet: { path: /health, port: http }
+            initialDelaySeconds: 15
+            periodSeconds: 5
+          livenessProbe:
+            httpGet: { path: /health, port: http }
+            initialDelaySeconds: 30
+            periodSeconds: 15

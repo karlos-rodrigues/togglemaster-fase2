@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Relatório de Entrega — Tech Challenge Fase 2 — ToggleMaster</title>
+<style>
+  @page {
+    size: A4;
+    margin: 2.3cm 2cm 1.9cm;
+    @top-left  { content: "ToggleMaster — Tech Challenge Fase 2";
+                 font-family: "DejaVu Sans", sans-serif; font-size: 7.6pt; color: #6b7580; }
+    @top-right { content: "Relatório de Entrega";
+                 font-family: "DejaVu Sans", sans-serif; font-size: 7.6pt; color: #6b7580; }
+    @bottom-center { content: counter(page);
+                 font-family: "DejaVu Sans", sans-serif; font-size: 8.5pt; color: #6b7580; }
+  }
+  @page :first {
+    @top-left { content: none } @top-right { content: none } @bottom-center { content: none }
+  }
+
+  :root{ --tinta:#16191d; --suave:#5f6873; --linha:#d5dae0; --fundo:#f5f7f9;
+         --ok:#0f7b3f; --parcial:#a8690b; --pend:#7c3aed; --alerta:#b3261e; }
+
+  body{ font-family:"DejaVu Sans","Liberation Sans",sans-serif; color:var(--tinta);
+        font-size:10.2pt; line-height:1.55; margin:0; }
+  h1{ font-size:17pt; line-height:1.3; margin:0 0 6px; font-weight:700 }
+  h2{ font-size:12.5pt; margin:22px 0 8px; padding-bottom:4px;
+      border-bottom:1.6pt solid var(--tinta); break-after:avoid }
+  h3{ font-size:10.8pt; margin:15px 0 5px; color:#242c35; break-after:avoid }
+  p{ margin:0 0 8px; text-align:justify }
+  ul,ol{ margin:0 0 9px; padding-left:18px } li{ margin-bottom:4px }
+
+  table{ width:100%; border-collapse:collapse; margin:9px 0 6px; font-size:9.2pt;
+         break-inside:avoid }
+  th,td{ border:0.6pt solid var(--linha); padding:5px 7px; vertical-align:top; text-align:left }
+  th{ background:var(--fundo); font-weight:700 }
+  td.c,th.c{ text-align:center; white-space:nowrap }
+
+  code{ font-family:"DejaVu Sans Mono",monospace; font-size:8.6pt;
+        background:var(--fundo); padding:0 3px; border-radius:2px }
+  pre{ background:var(--fundo); border:0.6pt solid var(--linha); border-left:2.5pt solid var(--suave);
+       padding:8px 10px; font-family:"DejaVu Sans Mono",monospace; font-size:8pt;
+       line-height:1.42; margin:8px 0 10px; white-space:pre-wrap; break-inside:avoid }
+
+  .box{ border:0.6pt solid var(--linha); border-left:3pt solid var(--tinta);
+        background:var(--fundo); padding:8px 11px; margin:10px 0; font-size:9.4pt;
+        break-inside:avoid }
+  .box > b:first-child{ display:block; margin-bottom:2px }
+  .box.pendente{ border-left-color:var(--pend); background:#f8f5ff }
+  .box.alerta{ border-left-color:var(--alerta); background:#fdf4f3 }
+
+  .ok{ color:var(--ok); font-weight:700 }
+  .parcial{ color:var(--parcial); font-weight:700 }
+  .pend{ color:var(--pend); font-weight:700 }
+
+  .cap{ font-size:8.6pt; color:var(--suave); margin:2px 0 13px; text-align:left }
+  .fig{ margin:9px 0 3px; text-align:center }
+  .fig img{ max-width:100%; border-radius:4px }
+
+  /* ---------- capa ---------- */
+  .capa{ height:24.2cm; display:flex; flex-direction:column; page-break-after:always }
+  .capa .inst{ text-align:center; font-size:11pt; line-height:1.5; margin-bottom:1.2cm }
+  .capa .inst b{ font-size:11.5pt }
+  .capa .meio{ flex:1; display:flex; flex-direction:column; justify-content:center; text-align:center }
+  .capa .titulo{ font-size:18pt; font-weight:700; line-height:1.35; margin-bottom:10px }
+  .capa .subtitulo{ font-size:11.5pt; color:var(--suave); margin-bottom:4.2cm }
+  .capa .autores{ font-size:10.5pt; line-height:1.9 }
+  .capa .local{ text-align:center; font-size:11pt; margin-top:1.2cm }
+
+  /* ---------- sumário ---------- */
+  .sumario{ page-break-after:always }
+  .sumario ol{ list-style:none; padding:0; margin:14px 0 0; font-size:10.2pt }
+  .sumario li{ margin-bottom:7px }
+  .sumario a{ color:var(--tinta); text-decoration:none }
+  .sumario a::after{ content: " " leader('.') " " target-counter(attr(href), page); color:var(--suave) }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════ CAPA ═══════════════════════ -->
+<div class="capa">
+  <div class="inst">
+    <b>FIAP — Faculdade de Informática e Administração Paulista</b><br>
+    DevOps e Arquitetura Cloud
+  </div>
+  <div class="meio">
+    <div class="titulo">ToggleMaster: de Monólito a um Ecossistema<br>
+      de Microsserviços Orquestrado em Kubernetes (AWS EKS)</div>
+    <div class="subtitulo">Relatório de Entrega — Tech Challenge Fase 2</div>
+    <div class="autores">
+      Karlos Rodrigues — RM <span class="pend">[preencher]</span> —
+      Discord: <span class="pend">[preencher]</span>
+    </div>
+  </div>
+  <div class="local">São Paulo — 2026</div>
+</div>
+
+<!-- ═══════════════════════ SUMÁRIO ═══════════════════════ -->
+<div class="sumario">
+  <h2>Sumário</h2>
+  <ol>
+    <li><a href="#s1">1. Introdução e Contexto do Projeto</a></li>
+    <li><a href="#s2">2. Arquitetura da Solução</a></li>
+    <li><a href="#s3">3. Conteinerização com Docker</a></li>
+    <li><a href="#s4">4. Infraestrutura Provisionada na AWS</a></li>
+    <li><a href="#s5">5. Orquestração com Kubernetes</a></li>
+    <li><a href="#s6">6. Ingress e Acesso Externo</a></li>
+    <li><a href="#s7">7. Escalabilidade Automática (HPA)</a></li>
+    <li><a href="#s8">8. Desafios e Decisões Técnicas</a></li>
+    <li><a href="#s9">9. Considerações Finais e Links do Projeto</a></li>
+    <li><a href="#apa">Apêndice A — Evidências de Execução</a></li>
+    <li><a href="#apb">Apêndice B — De-para: Requisitos do Enunciado × Entregas</a></li>
+  </ol>
+</div>
+
+<!-- ═══════════════════════ 1 ═══════════════════════ -->
+<h2 id="s1">1. Introdução e Contexto do Projeto</h2>
+<p>Na Fase 1, o ToggleMaster foi entregue como um MVP monolítico: uma aplicação Flask com
+PostgreSQL, publicada numa EC2 com banco RDS privado. Já naquela entrega, a análise do monolito
+apontava candidatos naturais a serem extraídos como serviços independentes — um de avaliação de
+flags, de leitura pesada e que se beneficiaria de cache próprio; um de administração das flags;
+e um de autenticação. É essa separação que que a Fase 2 executa.</p>
+
+<p>O motivo é o gargalo que já era esperado desde a Fase 1: escalabilidade grosseira, ou seja, não
+dá para escalar só o caminho de leitura sem escalar a aplicação inteira junto. Com a plataforma
+validada e a base de clientes crescendo, a diretoria da DevOps Solutions Inc. decidiu reescrever o
+sistema como um conjunto de microsserviços distribuídos, orquestrados em Kubernetes.</p>
+
+<p>O trabalho desta fase foi conteinerizar os cinco microsserviços entregues pela equipe de
+arquitetura (<code>auth-service</code>, <code>flag-service</code>, <code>targeting-service</code>,
+<code>evaluation-service</code> e <code>analytics-service</code>), provisionar a infraestrutura de
+nuvem que eles precisam, e implantar tudo num cluster Kubernetes com um único ponto de entrada e
+escala automática.</p>
+
+<div class="box">
+  Este projeto seguiu a Opção B do enunciado — conta pessoal AWS. O cluster foi criado com
+  <code>eksctl create cluster</code>, que já cuida de gerar as IAM roles corretas sozinho, sem
+  depender de uma role fixa como a <code>LabRole</code> do AWS Academy. Isso deixou o caminho livre
+  para usar IRSA sem restrição, tanto no Ingress Controller quanto, de forma bem mais granular, nos
+  service accounts do <code>evaluation-service</code> e do <code>analytics-service</code>
+  (Seção 5.3).
+</div>
+
+<h3>1.1 Ambiente de desenvolvimento</h3>
+<p>Para não misturar o trabalho com a estação de trabalho pessoal, todo o desenvolvimento aconteceu
+numa VM dedicada (Ubuntu 24.04 sobre KVM/libvirt, 4 vCPU, 6 GB de RAM), provisionada inteira por
+cloud-init. Docker, kubectl, Helm, eksctl, AWS CLI e as ferramentas de carga já vêm junto — o
+ambiente inteiro é reconstruído do zero a partir de um único arquivo, sem passo manual nenhum.</p>
+
+<!-- ═══════════════════════ 2 ═══════════════════════ -->
+<h2 id="s2">2. Arquitetura da Solução</h2>
+<p>A solução tem duas camadas. O cluster Kubernetes orquestra os cinco microsserviços e expõe um
+ponto único de entrada pelo Ingress. Os serviços gerenciados da AWS cuidam da persistência, do
+cache e da mensageria. Nenhum estado vive dentro do cluster — é isso que mantém os pods
+descartáveis e permite escalá-los sem cuidado especial.</p>
+
+<table>
+  <tr><th style="width:24%">Microsserviço</th><th style="width:36%">Responsabilidade</th>
+      <th>Persistência / Integração</th></tr>
+  <tr><td><code>auth-service</code> (Go)</td>
+      <td>Autenticação e gestão de chaves de API</td>
+      <td>Amazon RDS (PostgreSQL) dedicado</td></tr>
+  <tr><td><code>flag-service</code> (Python)</td>
+      <td>CRUD das definições de feature flags</td>
+      <td>Amazon RDS (PostgreSQL) dedicado</td></tr>
+  <tr><td><code>targeting-service</code> (Python)</td>
+      <td>Regras de segmentação de público (JSONB)</td>
+      <td>Amazon RDS (PostgreSQL) dedicado</td></tr>
+  <tr><td><code>evaluation-service</code> (Go)</td>
+      <td>Hot path — retorna a decisão <code>true</code>/<code>false</code></td>
+      <td>Amazon ElastiCache (Redis), publica eventos no SQS</td></tr>
+  <tr><td><code>analytics-service</code> (Python)</td>
+      <td>Consome eventos da fila e grava dados de análise</td>
+      <td>Amazon SQS (consumidor), Amazon DynamoDB</td></tr>
+</table>
+<div class="cap">Tabela 1 — Responsabilidades e dependências de dados de cada microsserviço.</div>
+
+<h3>2.1 Fluxo de uma requisição</h3>
+<p>O tráfego externo entra por um Load Balancer que o Nginx Ingress Controller provisiona sozinho,
+e é roteado por prefixo até o Service <code>ClusterIP</code> correspondente. O caminho mais
+importante é o do <code>evaluation-service</code>: primeiro consulta o Redis, e se der cache miss,
+busca ao mesmo tempo a definição da flag no <code>flag-service</code> e a regra de segmentação no
+<code>targeting-service</code>, junta os dois resultados, grava no cache com TTL de 30 segundos e
+responde. A decisão só depois é publicada, de forma assíncrona, na fila SQS — sem segurar a
+resposta ao cliente por causa disso.</p>
+
+<p>A avaliação em si é determinística: o serviço calcula um bucket de 0 a 99 a partir do hash SHA-1
+de <code>user_id + flag_name</code>. O mesmo usuário sempre recebe a mesma resposta para a mesma
+flag, sem guardar estado por usuário em lugar nenhum — o que é essencial para que qualquer réplica
+possa atender qualquer requisição, indiferente de qual pod respondeu da última vez.</p>
+
+<p>Cada serviço ficou isolado no seu próprio namespace, o que evita colisão de nomes de recursos e
+deixa RBAC e cotas configuráveis por área, de forma independente.</p>
+
+<div class="fig"><img src="figuras/diagrama.png" alt="Diagrama de arquitetura"></div>
+<div class="cap">Figura 1 — Arquitetura do ToggleMaster na nuvem: os 5 microsserviços, os 6 recursos de dados da AWS e o caminho do tráfego externo.</div>
+
+<!-- ═══════════════════════ 3 ═══════════════════════ -->
+<h2 id="s3">3. Conteinerização com Docker</h2>
+<p>Cada microsserviço ganhou um Dockerfile próprio com build multi-stage, separando o estágio de
+compilação do estágio de execução — assim nenhuma ferramenta de build sobra na imagem final.</p>
+
+<h3>3.1 Estratégia por linguagem</h3>
+<p>Os serviços em Go compilam em <code>golang:1.21-alpine</code> e rodam a partir de
+<code>gcr.io/distroless/static-debian12:nonroot</code>. O binário é estático
+(<code>CGO_ENABLED=0</code>), com <code>-trimpath</code> tirando os caminhos da máquina de build e
+<code>-ldflags="-s -w"</code> descartando símbolos e informação de depuração. A imagem final não
+tem shell nem gerenciador de pacotes — não sobra nenhum binário além da própria aplicação, o que
+reduz bastante a superfície de ataque.</p>
+
+<p>Os serviços em Python usam <code>python:3.11-slim</code> nos dois estágios: o primeiro monta um
+virtualenv, e só ele atravessa para o estágio final — o <code>pip</code> e os artefatos de
+compilação ficam para trás. A execução roda com um usuário não-root (uid 10001), sob Gunicorn.</p>
+
+<pre>
+# evaluation-service — Dockerfile multi-stage
+
+FROM golang:1.21-alpine AS build
+WORKDIR /src
+COPY go.mod go.sum ./
+RUN go mod download          # camada separada: só invalida se as dependências mudarem
+COPY . .
+RUN CGO_ENABLED=0 GOOS=linux go build \
+    -trimpath -ldflags="-s -w" \
+    -o /out/evaluation-service .
+
+FROM gcr.io/distroless/static-debian12:nonroot
+COPY --from=build /out/evaluation-service /evaluation-service
+EXPOSE 8004
+USER nonroot:nonroot
+ENTRYPOINT ["/evaluation-service"]
+</pre>
+
+<h3>3.2 Imagens produzidas</h3>
+<table>
+  <tr><th style="width:36%">Imagem</th><th class="c" style="width:18%">Tamanho final</th>
+      <th>Base do estágio de execução</th></tr>
+  <tr><td><code>auth-service</code></td><td class="c">16,5 MB</td><td>distroless/static</td></tr>
+  <tr><td><code>evaluation-service</code></td><td class="c">21,8 MB</td><td>distroless/static</td></tr>
+  <tr><td><code>flag-service</code></td><td class="c">248 MB</td><td>python:3.11-slim</td></tr>
+  <tr><td><code>targeting-service</code></td><td class="c">248 MB</td><td>python:3.11-slim</td></tr>
+  <tr><td><code>analytics-service</code></td><td class="c">287 MB</td><td>python:3.11-slim</td></tr>
+</table>
+<div class="cap">Tabela 2 — Tamanho das imagens após o build multi-stage.</div>
+<p>A diferença de mais de dez vezes entre Go e Python é esperada: o binário Go é autocontido e não
+precisa de runtime, enquanto as imagens Python carregam o interpretador e a biblioteca padrão
+junto.</p>
+
+<h3>3.3 Ambiente local — Docker Compose</h3>
+<p>O <code>docker-compose.yml</code> na raiz do repositório sobe os nove contêineres que o
+enunciado pede: os cinco microsserviços e os quatro bancos.</p>
+<table>
+  <tr><th style="width:30%">Contêiner</th><th class="c" style="width:12%">Porta</th><th>Função</th></tr>
+  <tr><td><code>auth-service</code></td><td class="c">8001</td><td>Chaves de API</td></tr>
+  <tr><td><code>flag-service</code></td><td class="c">8002</td><td>CRUD das feature flags</td></tr>
+  <tr><td><code>targeting-service</code></td><td class="c">8003</td><td>Regras de segmentação</td></tr>
+  <tr><td><code>evaluation-service</code></td><td class="c">8004</td><td>Hot path da decisão</td></tr>
+  <tr><td><code>analytics-service</code></td><td class="c">8005</td><td>Worker SQS → DynamoDB</td></tr>
+  <tr><td><code>postgres-auth</code></td><td class="c">—</td><td>Banco <code>auth_db</code></td></tr>
+  <tr><td><code>postgres-flags</code></td><td class="c">—</td><td>Bancos <code>flag_db</code> e <code>targeting_db</code></td></tr>
+  <tr><td><code>redis</code></td><td class="c">—</td><td>Cache do evaluation-service</td></tr>
+  <tr><td><code>dynamodb-local</code></td><td class="c">—</td><td>Tabela de eventos de analytics</td></tr>
+</table>
+<div class="cap">Tabela 3 — Os nove contêineres do ambiente local.</div>
+
+<p>O enunciado pede duas instâncias PostgreSQL locais para três serviços, então
+<code>postgres-flags</code> hospeda dois bancos logicos, criados já na inicialização do volume.
+Os schemas são montados direto dos próprios repositórios
+(<code>services/*/db/init.sql</code>) em vez de copiados para dentro do compose, o que evita ter
+duas versões do mesmo schema que podem sair de sincronia. Na AWS a separação passa ser física,
+como a Seção 4 exige.</p>
+
+<p>Três decisões de configuração merecem registro:</p>
+<ul>
+  <li>Os serviços de aplicação só sobem depois que os bancos reportam <code>healthy</code>
+      (<code>depends_on</code> com <code>condition: service_healthy</code>), o que evita falha de
+      corrida no boot.</li>
+  <li>O <code>analytics-service</code> roda com um único worker de propósito. O consumidor SQS
+      inicia no import do módulo, então cada worker do Gunicorn abriria um consumidor independente
+      da mesma fila dentro do mesmo pod — com <code>--workers 1</code> fica valendo a relação
+      1 pod = 1 consumidor, e a contagem de réplicas passa a ser proporcional à vazão real de
+      mensagens. É essa premissa que sustenta a escala automática da Seção 7.</li>
+  <li>A tabela do DynamoDB Local é criada por um contêiner efêmero, sob um profile dedicado, que
+      executa e encerra — não entra na contagem dos nove contêineres.</li>
+</ul>
+
+<h3>3.4 Validação do ambiente local</h3>
+<p>Depois de <code>docker compose up -d --build</code>, os nove contêineres sobem e os bancos
+reportam <code>healthy</code>. O fluxo foi testado de ponta a ponta:</p>
+<table>
+  <tr><th style="width:30%">Verificação</th><th>Resultado obtido</th></tr>
+  <tr><td>Health dos serviços</td>
+      <td><code>{"status":"ok"}</code> nas portas 8001, 8002, 8003 e 8004</td></tr>
+  <tr><td>Criação de chave de API</td>
+      <td><code>POST /admin/keys</code> autenticado com a <code>MASTER_KEY</code> retornou uma
+          chave <code>tm_key_…</code> de 71 caracteres</td></tr>
+  <tr><td>Criação da feature flag</td>
+      <td><code>enable-new-dashboard</code> criada com <code>is_enabled: true</code></td></tr>
+  <tr><td>Criação da regra</td>
+      <td><code>{"type":"PERCENTAGE","value":50}</code> gravada como JSONB</td></tr>
+  <tr><td>Avaliação de 8 usuários</td>
+      <td>4 resultados <code>true</code> e 4 <code>false</code> — bate com a regra de 50%, e o
+          resultado é determinístico por <code>user_id + flag_name</code></td></tr>
+  <tr><td>Cache</td>
+      <td>Chave <code>flag_info:enable-new-dashboard</code> presente no Redis; o log confirma
+          <code>Cache MISS</code> seguido de <code>Cache HIT</code></td></tr>
+  <tr><td>DynamoDB Local</td>
+      <td>Tabela criada com chave de partição <code>event_id</code> (String)</td></tr>
+</table>
+<div class="cap">Tabela 4 — Validação funcional do ambiente local.</div>
+
+<div class="fig"><img src="figuras/dcps_framed.png" alt="docker compose ps"></div>
+<div class="cap">Figura 2 — Ambiente local completo em execução, captura real de <code>docker compose ps</code>.</div>
+
+<!-- ═══════════════════════ 4 ═══════════════════════ -->
+<h2 id="s4">4. Infraestrutura Provisionada na AWS</h2>
+<p>Toda a infraestrutura foi provisionada via AWS CLI (Opção B), na região <code>us-east-1</code>.
+Os nós do cluster usam a IAM Role <code>eksctl-togglemaster-nodegroup-togg-NodeInstanceRole</code>,
+e há mais duas roles dedicadas via IRSA (Seção 5.3) para os pods que precisam falar com SQS e
+DynamoDB.</p>
+<table>
+  <tr><th style="width:22%">Recurso</th><th class="c" style="width:8%">Qtd.</th>
+      <th style="width:32%">Nome / Identificador</th><th>Configuração</th></tr>
+  <tr><td>Cluster Kubernetes</td><td class="c">1</td>
+      <td><code>togglemaster</code></td><td>EKS 1.31 · <code>us-east-1</code> · criado via <code>eksctl create cluster --with-oidc</code></td></tr>
+  <tr><td>Managed Node Group</td><td class="c">1</td>
+      <td><code>togglemaster-nodes</code></td><td><code>t3.medium</code> · Min=1 / Desejado=2 / Máx=4</td></tr>
+  <tr><td>Repositórios ECR</td><td class="c">5</td>
+      <td>um por microsserviço, tag <code>v1</code></td><td>Imagens da Seção 3 publicadas e confirmadas com <code>aws ecr list-images</code></td></tr>
+  <tr><td>RDS PostgreSQL</td><td class="c">3</td>
+      <td><code>togglemaster-auth</code> · <code>togglemaster-flag</code> · <code>togglemaster-targeting</code></td>
+      <td><code>db.t3.micro</code> · PostgreSQL 16.4 · Single-AZ · <code>--no-publicly-accessible</code></td></tr>
+  <tr><td>ElastiCache Redis</td><td class="c">1</td>
+      <td><code>togglemaster-evaluation-cache</code></td><td><code>cache.t3.micro</code> · Redis 7.1</td></tr>
+  <tr><td>Tabela DynamoDB</td><td class="c">1</td>
+      <td><code>ToggleMasterAnalytics</code></td>
+      <td>Chave de partição <code>event_id</code> (String) · billing <code>PAY_PER_REQUEST</code></td></tr>
+  <tr><td>Fila SQS Standard</td><td class="c">1</td>
+      <td><code>togglemaster-evaluation-events</code></td>
+      <td>Produtor: evaluation-service · Consumidor: analytics-service</td></tr>
+</table>
+<div class="cap">Tabela 5 — Inventário dos recursos de nuvem provisionados na Etapa 2 (todos <code>available</code>/<code>ACTIVE</code> confirmados via AWS CLI).</div>
+
+<div class="box alerta">
+  O <code>eksctl</code>, sem <code>--vpc-*</code> explícito, provisiona uma VPC nova para o cluster
+  — neste caso <code>192.168.0.0/16</code> — diferente da VPC padrão da conta
+  (<code>172.31.0.0/16</code>), que é onde o RDS e o ElastiCache tinham sido criados. Isso só
+  apareceu na prática quando os pods começaram a dar <code>i/o timeout</code> tentando falar com o
+  Redis: eram duas redes isoladas, sem rota entre si. Como os blocos CIDR não colidem, a saída foi
+  VPC Peering entre as duas, com rota adicionada nas route tables dos dois lados (a rota inversa na
+  VPC padrão, e a rota direta na route table que as duas subnets públicas dos nós do EKS
+  compartilham — por padrão o <code>eksctl</code> não usa
+  <code>--node-private-networking</code>). Numa próxima rodada, apontar o <code>eksctl</code> direto
+  para as subnets da VPC padrão via <code>--vpc-private-subnets</code>/<code>--vpc-public-subnets</code>
+  evitaria esse peering todo.
+</div>
+
+<p>Com <code>--no-publicly-accessible</code> (correto, como o enunciado pede), os endpoints do RDS
+só resolvem DNS de dentro da VPC — o que é esperado, mas teve uma consequência prática: rodar as
+migrações de schema (<code>db/init.sql</code> de cada serviço) exigiu subir um pod temporário com
+<code>postgres:16-alpine</code> dentro do próprio cluster (<code>kubectl run</code> +
+<code>kubectl cp</code> + <code>kubectl exec -- psql</code>), já que não dava para conectar direto
+da máquina de desenvolvimento.</p>
+
+<p>Depois que cada recurso foi criado, os endpoints, nomes de tabela e ARNs foram anotados e
+injetados no cluster como Secrets e ConfigMaps (Seção 5) — nenhuma credencial fica no código-fonte
+nem nas imagens publicadas no ECR. Vale registrar que o nome da tabela e a chave de partição do
+DynamoDB não são escolha livre: o <code>analytics-service</code> grava o item usando
+<code>event_id</code> como partition key e lê o nome da tabela da variável
+<code>AWS_DYNAMODB_TABLE</code>, então a tabela provisionada precisa respeitar esse contrato — senão
+o worker só falha em runtime, ao tentar gravar o primeiro evento.</p>
+
+<!-- ═══════════════════════ 5 ═══════════════════════ -->
+<h2 id="s5">5. Orquestração com Kubernetes</h2>
+
+<p>Cada microsserviço ficou isolado no seu próprio namespace, com os manifestos de Deployment,
+Service (<code>ClusterIP</code>), Secret e ConfigMap aplicados via <code>kubectl apply</code>. As
+imagens referenciadas nos Deployments apontam para os repositórios do ECR publicados na Seção 4,
+tag <code>v1</code>. No estado final, os 9 pods ficaram <code>Running</code> e <code>Ready</code>
+nos 5 namespaces.</p>
+
+<h3>5.1 Estrutura das Secrets</h3>
+<p>Os valores reais não entram neste relatório nem no repositório versionado — só a estrutura do
+manifesto:</p>
+<pre>
+apiVersion: v1
+kind: Secret
+metadata:
+  name: auth-db-credentials
+  namespace: auth
+type: Opaque
+data:
+  DATABASE_URL: [base64 — definido em tempo de deploy]
+  MASTER_KEY:   [base64 — definido em tempo de deploy]
+</pre>
+<p>Todas as Secrets seguem a codificação em base64 que o Kubernetes exige, geradas a partir de um
+arquivo <code>.env</code> local que não é versionado (fica fora via <code>.gitignore</code>) e só
+vira YAML no momento do deploy.</p>
+
+<h3>5.2 Boas práticas aplicadas em todos os Deployments</h3>
+<ul>
+  <li>Requests e Limits de CPU e memória em todos os contêineres, para um pod não consumir recursos
+      além do necessário e atrapalhar o agendamento dos outros no mesmo nó.</li>
+  <li>Readiness e Liveness Probes via <code>GET /health</code>, presente nos cinco serviços. O
+      <code>initialDelaySeconds</code> acompanha o tempo de boot de cada linguagem: os binários Go
+      respondem quase na hora, enquanto os serviços Python sob Gunicorn precisam de uma folga
+      maior.</li>
+  <li>Separação por Namespace, o que permite aplicar <code>ResourceQuota</code> de forma
+      independente por serviço.</li>
+  <li>Um worker por pod no <code>analytics-service</code>, pelo motivo já explicado na Seção 3.3 —
+      é o que torna a contagem de réplicas uma medida fiel da capacidade de consumo da fila.</li>
+</ul>
+
+<h3>5.3 Acesso a SQS e DynamoDB — IRSA com política de menor privilégio</h3>
+<p>O <code>evaluation-service</code> e o <code>analytics-service</code> precisam de credenciais AWS
+para falar com SQS e DynamoDB. A role padrão dos nós do EKS
+(<code>AmazonEKSWorkerNodePolicy</code> + <code>AmazonEC2ContainerRegistryPullOnly</code>) não traz
+essas permissões, e isso é proposital: dar essa permissão ao node inteiro faria qualquer pod
+agendado ali herdar o acesso, o que violaria o princípio do menor privilégio.</p>
+<p>A saída foi IRSA (IAM Roles for Service Accounts), possível porque o cluster nasceu com
+<code>--with-oidc</code>. Duas service accounts dedicadas (<code>evaluation-sa</code>,
+<code>analytics-sa</code>) foram criadas via <code>eksctl create iamserviceaccount</code>, cada uma
+com sua própria IAM Role, anexadas a uma policy com três declarações separadas em vez de uma
+permissão genérica de SQS/DynamoDB:</p>
+<pre>
+{
+  "Statement": [
+    { "Sid": "SqsEvaluationProducer",
+      "Action": ["sqs:SendMessage"], "Resource": "arn:aws:sqs:...:togglemaster-evaluation-events" },
+    { "Sid": "SqsAnalyticsConsumer",
+      "Action": ["sqs:ReceiveMessage","sqs:DeleteMessage","sqs:GetQueueAttributes"],
+      "Resource": "arn:aws:sqs:...:togglemaster-evaluation-events" },
+    { "Sid": "DynamoDbAnalytics",
+      "Action": ["dynamodb:PutItem"], "Resource": "arn:aws:dynamodb:...:table/ToggleMasterAnalytics" }
+  ]
+}
+</pre>
+<p>O <code>evaluation-service</code> só consegue enviar mensagens, porque é o produtor. O
+<code>analytics-service</code> só consegue receber e apagar, porque é o consumidor, e só pode fazer
+<code>PutItem</code> na tabela específica — nunca <code>Scan</code>, <code>Query</code> ou qualquer
+leitura em massa. Cada Deployment referencia a sua service account em
+<code>spec.template.spec.serviceAccountName</code>.</p>
+
+<!-- ═══════════════════════ 6 ═══════════════════════ -->
+<h2 id="s6">6. Ingress e Acesso Externo</h2>
+
+<p>O Nginx Ingress Controller foi instalado via Helm (<code>ingress-nginx/ingress-nginx</code>),
+com o Service do controller do tipo <code>LoadBalancer</code> anotado para provisionar um Network
+Load Balancer (<code>service.beta.kubernetes.io/aws-load-balancer-type: nlb</code>). Quem
+provisiona o NLB é o cloud-controller-manager nativo do EKS, então não foi preciso instalar o AWS
+Load Balancer Controller à parte. O manifesto Ingress roteia por prefixo de rota:</p>
+<table>
+  <tr><th style="width:24%">Rota</th><th style="width:40%">Service de destino</th>
+      <th class="c">Porta</th></tr>
+  <tr><td><code>/auth</code></td><td><code>auth-service</code></td><td class="c">8001</td></tr>
+  <tr><td><code>/flags</code></td><td><code>flag-service</code></td><td class="c">8002</td></tr>
+  <tr><td><code>/targeting</code></td><td><code>targeting-service</code></td><td class="c">8003</td></tr>
+  <tr><td><code>/evaluate</code></td><td><code>evaluation-service</code></td><td class="c">8004</td></tr>
+  <tr><td><code>/events</code></td><td><code>analytics-service</code></td><td class="c">8005</td></tr>
+</table>
+<div class="cap">Tabela 6 — Regras de roteamento do manifesto Ingress.</div>
+
+<p>O hostname do NLB provisionado é
+<code>abc9bb709ba2943ea8099ae621c5939a-76d2e22c4f7f64c3.elb.us-east-1.amazonaws.com</code>. A
+validação de acesso externo chamou as quatro rotas por curl:</p>
+<pre>
+$ curl http://abc9bb709ba2943ea8099ae621c5939a-76d2e22c4f7f64c3.elb.us-east-1.amazonaws.com/auth/health
+{"status":"ok"}
+$ curl http://abc9bb709ba2943ea8099ae621c5939a-76d2e22c4f7f64c3.elb.us-east-1.amazonaws.com/flags/health
+{"status":"ok"}
+$ curl http://abc9bb709ba2943ea8099ae621c5939a-76d2e22c4f7f64c3.elb.us-east-1.amazonaws.com/targeting/health
+{"status":"ok"}
+$ curl http://abc9bb709ba2943ea8099ae621c5939a-76d2e22c4f7f64c3.elb.us-east-1.amazonaws.com/evaluate/health
+{"status":"ok"}
+</pre>
+<p>As quatro rotas responderam HTTP 200 passando pelo balanceador de verdade, não só por
+port-forward, o que confirma que o rewrite-target descrito abaixo está funcionando: o Ingress
+recebe <code>/auth/health</code> e o <code>auth-service</code> recebe só <code>/health</code>, que é
+o que o código-fonte espera.</p>
+
+<div class="box alerta">
+  As rotas dos serviços são <code>/health</code>, <code>/flags/&lt;nome&gt;</code>,
+  <code>/rules/&lt;flag&gt;</code> e <code>/evaluate</code>, sem o prefixo do Ingress. Sem reescrever
+  o caminho (<code>rewrite-target</code>), o backend responde 404 para todo o tráfego que passa
+  pelo balanceador — mesmo funcionando perfeitamente quando testado por port-forward, o que faz o
+  problema passar despercebido até chegar no ambiente real.
+</div>
+
+<!-- ═══════════════════════ 7 ═══════════════════════ -->
+<h2 id="s7">7. Escalabilidade Automática (HPA)</h2>
+
+<p>O Metrics Server foi instalado como addon gerenciado do EKS (o achado da Seção 8.3 explica por
+quê) e confirmado com <code>kubectl top nodes</code> antes de qualquer teste de carga.</p>
+
+<table>
+  <tr><th style="width:30%">Serviço</th><th style="width:24%">Métrica</th>
+      <th class="c">Alvo</th><th class="c">Mín.</th><th class="c">Máx.</th></tr>
+  <tr><td><code>evaluation-service</code></td><td>Utilização média de CPU</td>
+      <td class="c">70%</td><td class="c">2</td><td class="c">6</td></tr>
+  <tr><td><code>analytics-service</code></td><td>Utilização média de CPU</td>
+      <td class="c">65%</td><td class="c">1</td><td class="c">5</td></tr>
+</table>
+<div class="cap">Tabela 7 — Configuração dos HorizontalPodAutoscalers, ambos aplicados e ativos no cluster.</div>
+
+<h3>7.1 Teste de carga — evaluation-service</h3>
+<p>A carga foi gerada com <code>ab</code> (ApacheBench) direto na rota <code>/evaluate</code> do
+NLB, simulando tráfego real de cliente externo, não port-forward:</p>
+<pre>
+$ ab -n 200000 -c 60 -t 240 "http://&lt;NLB&gt;/evaluate/evaluate?user_id=load-user&amp;flag_name=enable-new-dashboard"
+</pre>
+<table>
+  <tr><th style="width:34%">Momento</th><th class="c">CPU (uso/alvo)</th><th class="c">Réplicas</th></tr>
+  <tr><td>Antes da carga (baseline)</td><td class="c">1% / 70%</td><td class="c">2</td></tr>
+  <tr><td>Sob carga (pico observado)</td><td class="c">273% / 70%</td><td class="c">4</td></tr>
+  <tr><td>Após o fim da carga (cooldown de 180s)</td><td class="c">1% / 70%</td><td class="c">2 (scale-down automático)</td></tr>
+</table>
+<div class="cap">Tabela 8 — Comportamento do HPA do evaluation-service sob carga real, medido com
+<code>kubectl top pods</code> e <code>kubectl get hpa</code>.</div>
+<p>O HPA reagiu dentro da janela de <code>stabilizationWindowSeconds: 0</code> configurada para
+scale-up, dobrando as réplicas de 2 para 4 pouco depois do início da carga, e voltou ao piso de 2
+depois do período de estabilização de scale-down, sem oscilar entre os dois estados.</p>
+
+<h3>7.2 Teste do fluxo assíncrono — analytics-service</h3>
+<p>Em vez de mandar mensagens manuais pelo Console, o teste seguiu o caminho real do sistema:
+requisições de avaliação passando pelo Ingress, cada uma disparando um evento assíncrono para o
+SQS.</p>
+<table>
+  <tr><th style="width:34%">Passo</th><th>Resultado</th></tr>
+  <tr><td>20 requisições a <code>/evaluate/evaluate</code> via NLB</td>
+      <td>200 OK em todas, cada uma publicando 1 evento no SQS de forma assíncrona
+          (<code>go a.sendEvaluationEvent</code>)</td></tr>
+  <tr><td>Consumo pelo <code>analytics-service</code></td>
+      <td>Long-polling de até 20s, sem intervenção manual</td></tr>
+  <tr><td>Itens gravados no DynamoDB</td>
+      <td>20 de 20, confirmado com <code>aws dynamodb scan --select COUNT</code></td></tr>
+</table>
+<div class="cap">Tabela 9 — Validação do fluxo evaluation-service → SQS → analytics-service → DynamoDB, de ponta a ponta na infraestrutura real.</div>
+
+<p>Vale explicar por que a métrica de escala do <code>analytics-service</code> importa: o HPA por
+CPU mede o efeito (o processamento gasto ao tratar as mensagens), não a causa (a profundidade da
+fila). Funciona, mas reage só depois que a carga já virou consumo de CPU, e nunca escala a zero. O
+KEDA, observando <code>ApproximateNumberOfMessagesVisible</code> direto, escala de 0 a N e é a
+métrica mais correta para uma carga orientada a eventos. Essa distinção só se sustenta, aliás, por
+causa da decisão de <code>--workers 1</code> da Seção 3.3 — com vários consumidores por pod, nem a
+profundidade da fila nem a CPU seriam proporcionais ao número de réplicas.</p>
+
+<!-- ═══════════════════════ 8 ═══════════════════════ -->
+<h2 id="s8">8. Desafios e Decisões Técnicas</h2>
+
+<h3>8.1 O código-fonte recebido não compilava</h3>
+<p>O primeiro passo do enunciado é rodar o ecossistema localmente. Ao clonar os cinco repositórios
+de <code>github.com/FIAP-TCs</code>, os dois serviços escritos em Go simplesmente não compilavam.
+Não é questão de estilo — são erros que o compilador rejeita, o que impede qualquer
+<code>go build</code> e, por tabela, o build das imagens. Os três serviços em Python foram usados
+sem alteração no código.</p>
+<table>
+  <tr><th class="c" style="width:5%">#</th><th style="width:26%">Arquivo</th>
+      <th>Defeito e correção</th></tr>
+  <tr><td class="c">1</td><td><code>auth-service/go.mod</code></td>
+      <td><code>require github.com/jackc/pgx/v4/stdlib v4.18.3</code> — <code>stdlib</code> é um
+      pacote dentro do módulo <code>pgx/v4</code>, não um módulo próprio. O Go recusa com
+      <code>version "v4.18.3" invalid: should be v0 or v1</code>, e trava todo comando
+      <code>go</code>. Correção: linha removida.</td></tr>
+  <tr><td class="c">2</td><td><code>auth-service/main.go</code></td>
+      <td>Driver <code>pgx/v4/stdlib</code> importado sem <code>_</code>, mas nunca referenciado —
+      só é usado pelo efeito colateral do <code>init()</code>. Correção: import em branco.</td></tr>
+  <tr><td class="c">3</td><td><code>auth-service/main.go</code></td>
+      <td><code>"fmt"</code> importado e não usado. Correção: removido.</td></tr>
+  <tr><td class="c">4</td><td><code>auth-service/handlers.go</code></td>
+      <td><code>"crypto/sha256"</code> e <code>"encoding/hex"</code> importados e não usados — quem
+      os usa é <code>key.go</code>. Correção: removidos.</td></tr>
+  <tr><td class="c">5</td><td><code>auth-service/key.go</code></td>
+      <td><code>"fmt"</code> importado e não usado. Correção: removido.</td></tr>
+  <tr><td class="c">6</td><td><code>evaluation-service/go.sum</code></td>
+      <td>O arquivo é uma cópia do <code>go.mod</code> (começa com
+      <code>module evaluation-service</code>). O Go recusa com
+      <code>malformed go.sum: wrong number of fields 2</code>. Correção: descartado e regerado com
+      <code>go mod tidy</code>.</td></tr>
+  <tr><td class="c">7</td><td><code>evaluation-service/evaluator.go</code></td>
+      <td>Usa <code>os.Getenv("SERVICE_API_KEY")</code> sem importar <code>"os"</code>
+      (<code>undefined: os</code>). Correção: import adicionado.</td></tr>
+  <tr><td class="c">8</td><td><code>evaluation-service/evaluator.go</code></td>
+      <td><code>"context"</code> importado e não usado — o <code>ctx</code> das chamadas ao Redis é
+      a variável global de <code>main.go</code>. Correção: removido.</td></tr>
+</table>
+<div class="cap">Tabela 10 — Defeitos de compilação corrigidos no código-fonte recebido.</div>
+<p>Depois das correções, <code>go build ./...</code> conclui sem erro nos dois serviços. O
+diagnóstico completo de cada defeito está no arquivo <code>PATCHES.md</code>, na raiz do
+repositório.</p>
+
+<h3>8.2 Dependências declaradas sem travas suficientes</h3>
+<p>Dois problemas de dependência impediriam a subida dos contêineres, e os dois foram resolvidos
+sem tocar no código-fonte nem no <code>requirements.txt</code> original:</p>
+<ul>
+  <li>Flask 2.2.2 sem pin de Werkzeug. O <code>requirements.txt</code> fixa
+      <code>Flask==2.2.2</code>, mas não fixa o Werkzeug. Como o Flask 2.2.2 só declara
+      <code>Werkzeug&gt;=2.2.2</code>, o pip resolve para a série 3.x, que removeu
+      <code>werkzeug.urls.url_quote</code> — import que o Flask 2.2 ainda faz. O contêiner morreria
+      com <code>ImportError</code> antes do primeiro request. A solução foi um
+      <code>constraints.txt</code> travando <code>Werkzeug&lt;3</code>, que complementa o arquivo
+      original em vez de substituí-lo.</li>
+  <li>boto3 velho demais para o DynamoDB Local. O <code>app.py</code> do
+      <code>analytics-service</code> cria os clientes com <code>session.client("dynamodb")</code>,
+      sem <code>endpoint_url</code> e sem nenhuma forma de configurá-lo por fora. As variáveis
+      <code>AWS_ENDPOINT_URL_DYNAMODB</code> e <code>AWS_ENDPOINT_URL_SQS</code> resolveriam, mas só
+      passaram a ser lidas pelo botocore a partir da série 1.31, e o <code>requirements.txt</code>
+      fixa a 1.26.50. A solução foi um <code>requirements-container.txt</code>, instalado depois do
+      original, elevando o boto3 — a mesma imagem serve os dois ambientes: localmente a variável
+      aponta para o DynamoDB Local, na AWS basta não definir ela.</li>
+</ul>
+
+<h3>8.3 Dependência circular no bootstrap</h3>
+<p>O <code>evaluation-service</code> precisa de uma chave de API para conversar com o
+<code>flag-service</code> e o <code>targeting-service</code>, mas essa chave só existe depois que o
+<code>auth-service</code> já estiver no ar — nao tem como injetá-la antes da primeira subida. A
+solução foi documentar um bootstrap em duas etapas: subir a stack, gerar a chave, gravá-la e
+recriar só o <code>evaluation-service</code>.</p>
+<div class="box alerta">
+  Uma armadilha apareceu durante a validação: carregar o <code>.env</code> no shell
+  (<code>set -a; . ./.env</code>) antes de chamar o <code>docker compose</code> faz o serviço
+  receber a chave vazia e levar 401 do <code>flag-service</code> — mesmo com o valor certo gravado
+  no arquivo. A causa é a ordem de precedência do Docker Compose: variável já exportada no ambiente
+  vence o arquivo <code>.env</code>. O sintoma engana, porque a mesma chave testada isolada com
+  curl responde 200 sem problema. O diagnóstico veio de comparar o valor do arquivo com o que o
+  contêiner de fato recebeu, via <code>docker inspect</code>.
+</div>
+
+<h3>8.4 HPA por CPU × KEDA por profundidade de fila</h3>
+<p>Numa conta pessoal, a escolha mais correta para o <code>analytics-service</code> seria o KEDA,
+escalando direto pela métrica <code>ApproximateNumberOfMessagesVisible</code> da fila SQS, evitando
+o atraso natural do HPA por CPU — que só reage depois que a carga já virou consumo de
+processamento. No ambiente AWS Academy o KEDA não é viável, porque depende de IRSA para criar roles
+próprias, e nesse caso vale o workaround que o próprio enunciado sugere: escalar por CPU. A
+discussão completa está na Seção 7.</p>
+
+<h3>8.5 Diferença de propósito entre os três data stores</h3>
+<ul>
+  <li>Amazon RDS (PostgreSQL) guarda os dados relacionais e transacionais dos serviços de domínio
+      (auth, flag, targeting), onde consistência forte e relacionamento entre entidades são
+      essenciais. É o caso do <code>targeting-service</code>, que guarda a regra como JSONB mas
+      depende da unicidade de <code>flag_name</code> garantida pelo banco.</li>
+  <li>Amazon ElastiCache (Redis) é o cache em memória de baixíssima latência para o hot path, com
+      TTL de 30 segundos. Prioriza velocidade de leitura em troca de persistência — perder o cache
+      custa só um miss, nunca um dado de verdade.</li>
+  <li>Amazon DynamoDB guarda eventos de analytics em alto volume, com escrita desnormalizada,
+      priorizando throughput e escala horizontal sobre consultas relacionais complexas. Cada evento
+      é independente e nunca é atualizado, o que dispensa transação.</li>
+</ul>
+
+<h3>8.6 Isolamento do ambiente de desenvolvimento</h3>
+<p>Todo o trabalho foi feito numa VM dedicada, provisionada por cloud-init (Seção 1.1), em vez de
+instalar o ferramental direto na estação de trabalho. O ganho não é só organização: o ambiente é
+descartavel e recriável, o que elimina a classe de problema em que algo funciona só por causa de um
+resíduo de configuração local que ninguém mais consegue reproduzir.</p>
+
+<h3>8.7 Achados reais do provisionamento (Opção B)</h3>
+<table>
+  <tr><th style="width:30%">Achado</th><th>Como foi contornado</th></tr>
+  <tr><td>Versão de EKS do enunciado (1.29) fora de suporte</td>
+      <td>Erro <code>invalid version, 1.29 is no longer supported</code>. Usada a versão suportada
+          mais próxima, 1.31 — o enunciado é de out/2025 e a AWS já descontinuou a série.</td></tr>
+  <tr><td>Conta no AWS Free Plan trava RDS em 2 instâncias</td>
+      <td>Não é a cota padrão de serviço (essa é 40), é uma restrição do
+          <code>accountPlanType: FREE</code>. Erro:
+          <code>InstanceQuotaExceeded... upgrade your account plan</code>. Resolvido com upgrade
+          para <code>PAID</code>, sem custo imediato — os créditos gratuitos da conta continuaram
+          intactos.</td></tr>
+  <tr><td><code>eksctl</code> cria uma VPC isolada da VPC padrão</td>
+      <td>Pods sem rota para o RDS/ElastiCache, criados na VPC padrão. Resolvido com VPC Peering e
+          rotas nos dois lados (detalhe na Seção 4).</td></tr>
+  <tr><td>Manifest comunitário do Metrics Server colide com o addon gerenciado do EKS</td>
+      <td>O EKS já instala o Metrics Server como addon nativo. Aplicar a manifest padrão do GitHub
+          por cima trocou os labels do pod e quebrou o Service correspondente
+          (<code>MissingEndpoints</code>). Corrigido removendo e recriando o addon gerenciado
+          (<code>aws eks delete-addon</code> / <code>create-addon</code>) — a lição é nunca
+          sobrepor um addon gerenciado com a manifest da comunidade.</td></tr>
+  <tr><td>RDS privado inacessível da máquina de desenvolvimento</td>
+      <td>Por desenho (<code>--no-publicly-accessible</code>). As migrações de schema rodaram de
+          dentro do cluster, via um pod temporário com <code>psql</code> (Seção 4).</td></tr>
+  <tr><td>Node role sem permissão para SQS/DynamoDB</td>
+      <td>A role padrão dos nós do EKS não traz essas permissões, de propósito, para não dar acesso
+          a todo pod agendado no nó. Resolvido com IRSA e política de menor privilégio (Seção 5.3),
+          em vez de anexar a permissão na role do nó inteiro.</td></tr>
+</table>
+<div class="cap">Tabela 11 — Achados reais durante o provisionamento na AWS, com a correção aplicada em cada um.</div>
+
+<!-- ═══════════════════════ 9 ═══════════════════════ -->
+<h2 id="s9">9. Considerações Finais e Links do Projeto</h2>
+<p>A migração para microsserviços concretizou o que o relatório da Fase 1 já apontava como
+candidato a extração — em especial separar o caminho de leitura de alta frequência, agora com cache
+próprio e escala independente, do CRUD administrativo das flags. Cada serviço passou a ter seu
+próprio ciclo de implantação, sua própria persistência e sua própria política de escala, o que
+resolve a escalabilidade grosseira que era a principal desvantagem do monolito.</p>
+
+<p>O ganho mais fácil de enxergar está na conteinerização: imagens de 16,5 MB e 21,8 MB para os
+serviços em Go, sem shell nem gerenciador de pacotes, dão uma superfície de ataque e um tempo de
+pull muito menores do que uma imagem base convencional entregaria.</p>
+
+<p>Mas o aprendizado que mais pesou não veio da orquestração — veio da base recebida. Oito defeitos
+de compilação e dois problemas de dependência precisaram ser resolvidos antes que qualquer
+contêiner subisse. Não adianta discutir estratégia de autoescala se o <code>go build</code> nem
+passa.</p>
+
+<table>
+  <tr><th style="width:44%">Item</th><th>Link</th></tr>
+  <tr><td>Repositório (código-fonte, compose e manifestos)</td><td class="pend">[preencher]</td></tr>
+  <tr><td>Forks dos 5 microsserviços com as correções da Seção 8.1</td><td class="pend">[preencher]</td></tr>
+  <tr><td>Vídeo de demonstração (até 20 min)</td><td class="pend">[preencher — YouTube]</td></tr>
+  <tr><td>Diagrama de arquitetura</td><td>Figura 1, Seção 2</td></tr>
+  <tr><td>Badge Google Cloud Skills Boost (pontuação extra)</td>
+      <td class="pend">[preencher — perfil público, se concluída]</td></tr>
+  <tr><td>Repositório da Fase 1 (referência)</td>
+      <td>https://github.com/dougls/toggle-master-monolith</td></tr>
+</table>
+<div class="cap">Tabela 12 — Links da entrega.</div>
+
+<!-- ═══════════════════════ APÊNDICES ═══════════════════════ -->
+<h2 id="apa">Apêndice A — Evidências de Execução</h2>
+<p>Capturas comprovando cada etapa, a serem referenciadas pelos tempos correspondentes no vídeo.</p>
+<table>
+  <tr><th class="c" style="width:8%">Item</th><th style="width:52%">Evidência</th>
+      <th class="c">Status</th></tr>
+  <tr><td class="c">A.1</td><td><code>go build</code> concluindo nos dois serviços Go após as
+      correções</td><td class="c ok">Disponível</td></tr>
+  <tr><td class="c">A.2</td><td><code>docker images</code> — tamanho das cinco imagens</td>
+      <td class="c ok">Disponível</td></tr>
+  <tr><td class="c">A.3</td><td><code>docker compose ps</code> — os nove contêineres (Figura 2)</td>
+      <td class="c ok">Disponível</td></tr>
+  <tr><td class="c">A.4</td><td>Fluxo ponta a ponta: chave de API, flag, regra e avaliações</td>
+      <td class="c ok">Disponível</td></tr>
+  <tr><td class="c">A.5</td><td>Recursos provisionados na AWS — <code>aws rds/elasticache/dynamodb/sqs describe-*</code></td>
+      <td class="c ok">Disponível</td></tr>
+  <tr><td class="c">A.6</td><td>Cluster ativo e <code>kubectl get pods -A</code> — 9/9 <code>Running</code> nos 5 namespaces</td>
+      <td class="c ok">Disponível</td></tr>
+  <tr><td class="c">A.7</td><td>Ingress: <code>curl</code> nas 4 rotas via hostname do NLB, todas 200</td>
+      <td class="c ok">Disponível</td></tr>
+  <tr><td class="c">A.8</td><td>Teste de carga (<code>ab</code>) e <code>kubectl get hpa</code> escalando de 2 para 4 réplicas</td>
+      <td class="c ok">Disponível</td></tr>
+  <tr><td class="c">A.9</td><td>20 avaliações via Ingress → SQS → analytics-service → 20 itens no DynamoDB</td>
+      <td class="c ok">Disponível</td></tr>
+</table>
+
+<h2 id="apb">Apêndice B — De-para: Requisitos do Enunciado × Entregas</h2>
+<p>Legenda: <span class="ok">✓</span> atendido · <span class="parcial">~</span> parcial ·
+<span class="pend">◌</span> pendente</p>
+<table>
+  <tr><th style="width:48%">Requisito</th><th class="c" style="width:8%">Status</th><th>Onde</th></tr>
+  <tr><td>1 — Dockerfile otimizado (multi-stage) para os 5 microsserviços</td>
+      <td class="c ok">✓</td><td>Seção 3.1, Tabela 2</td></tr>
+  <tr><td>1 — <code>docker-compose.yml</code> único com 5 apps + 4 bancos</td>
+      <td class="c ok">✓</td><td>Seção 3.3, Tabela 3</td></tr>
+  <tr><td>1 — Ecossistema executando e compreendido localmente</td>
+      <td class="c ok">✓</td><td>Seção 3.4, Tabela 4</td></tr>
+  <tr><td>2 — Cluster Kubernetes provisionado</td><td class="c ok">✓</td><td>Seção 4</td></tr>
+  <tr><td>2 — 5 repositórios ECR com as imagens publicadas</td><td class="c ok">✓</td><td>Seção 4</td></tr>
+  <tr><td>2 — 3 instâncias RDS PostgreSQL independentes</td><td class="c ok">✓</td><td>Seção 4</td></tr>
+  <tr><td>2 — 1 cluster ElastiCache Redis</td><td class="c ok">✓</td><td>Seção 4</td></tr>
+  <tr><td>2 — 1 tabela DynamoDB e 1 fila SQS Standard</td><td class="c ok">✓</td><td>Seção 4</td></tr>
+  <tr><td>3 — Metrics Server instalado</td><td class="c ok">✓</td><td>Seção 7</td></tr>
+  <tr><td>3 — Nginx Ingress Controller instalado</td><td class="c ok">✓</td><td>Seção 6</td></tr>
+  <tr><td>4 — Manifestos: Namespace, Deployment, Service, Secret, ConfigMap</td>
+      <td class="c ok">✓</td><td>Seção 5</td></tr>
+  <tr><td>4 — Ingress com roteamento por prefixo de rota</td>
+      <td class="c ok">✓</td><td>Seção 6</td></tr>
+  <tr><td>4 — Requests/Limits, Secrets em base64, Probes e Namespaces</td>
+      <td class="c ok">✓</td><td>Seção 5.2</td></tr>
+  <tr><td>5 — HPA no evaluation-service e no analytics-service</td>
+      <td class="c ok">✓</td><td>Seção 7</td></tr>
+  <tr><td>Vídeo — compose com 9 contêineres, cluster, pods, Ingress e escala</td>
+      <td class="c pend">◌</td><td>Comandos prontos (Apêndice A); gravação pendente</td></tr>
+  <tr><td>Vídeo — explicar a escolha da métrica de escala do analytics-service</td>
+      <td class="c ok">✓</td><td>Seções 7 e 8.4</td></tr>
+  <tr><td>Vídeo — explicar a diferença de propósito entre os 3 data stores</td>
+      <td class="c ok">✓</td><td>Seção 8.5</td></tr>
+  <tr><td>Vídeo — explicar a arquitetura e os desafios encontrados</td>
+      <td class="c ok">✓</td><td>Seções 2 e 8</td></tr>
+  <tr><td>Relatório — nome, RM e Discord dos participantes</td>
+      <td class="c parcial">~</td><td>Capa (RM e Discord a preencher)</td></tr>
+  <tr><td>Relatório — links dos repositórios e do vídeo</td>
+      <td class="c pend">◌</td><td>Seção 9, Tabela 9</td></tr>
+  <tr><td>Extra — trilha Google Cloud Skills Boost (10 pontos, opcional)</td>
+      <td class="c pend">◌</td><td>Seção 9, Tabela 9</td></tr>
+</table>
+
+</body>
+</html>
